@@ -71,6 +71,7 @@ public class WorldManager : MonoBehaviour
             Debug.Log("ox = " + offsetX );
             curOffsetX = offsetX;
 
+            //Update Water
             for (int i = 0; i < waterTiles.Count; i++)
             {
                 waterTiles[waterTiles.Count - 1][i].transform.position -= new Vector3(tileSize * (viewDistance * 2 + 1), 0, 0);
@@ -78,10 +79,22 @@ public class WorldManager : MonoBehaviour
             List<GameObject> tileList = waterTiles[waterTiles.Count - 1];
             waterTiles.RemoveAt(waterTiles.Count - 1);
             waterTiles.Insert(0, tileList);
+
+            //Update Terrain
+            for (int i = 0; i < terrainTiles.Count; i++)
+            {
+                terrainTiles[terrainTiles.Count - 1][i].transform.position += new Vector3(tileSize * (viewDistance * 2 + 1), 0, 0);
+                terrainTiles[terrainTiles.Count - 1][i].UpdateTerrain();
+            }
+            List<TerrainGenerator> terrainList = terrainTiles[terrainTiles.Count - 1];
+            terrainTiles.RemoveAt(terrainTiles.Count - 1);
+            terrainTiles.Insert(0, terrainList);
+
         } else if (offsetX > curOffsetX) {
             Debug.Log("ox = " + offsetX );
             curOffsetX = offsetX;
 
+            //Update Water
             for (int i = 0; i < waterTiles.Count; i++)
             {
                 waterTiles[0][i].transform.position += new Vector3(tileSize * (viewDistance * 2 + 1), 0, 0);
@@ -89,6 +102,16 @@ public class WorldManager : MonoBehaviour
             List<GameObject> tileList = waterTiles[0];
             waterTiles.RemoveAt(0);
             waterTiles.Add(tileList);
+
+            //Update Terrain
+            for (int i = 0; i < terrainTiles.Count; i++)
+            {
+                terrainTiles[0][i].transform.position += new Vector3(tileSize * (viewDistance * 2 + 1), 0, 0);
+                terrainTiles[0][i].UpdateTerrain();
+            }
+            List<TerrainGenerator> terrainList = terrainTiles[0];
+            terrainTiles.RemoveAt(0);
+            terrainTiles.Add(terrainList);
         }
 
         int offsetZ = (int)(Camera.transform.position.z / tileSize);
@@ -97,6 +120,7 @@ public class WorldManager : MonoBehaviour
             Debug.Log("oz = " + offsetZ);
             curOffsetZ = offsetZ;
 
+            //Update Water
             for (int i = 0; i < waterTiles.Count; i++)
             {
                 GameObject t = waterTiles[i][waterTiles.Count-1];
@@ -104,19 +128,41 @@ public class WorldManager : MonoBehaviour
                 t.transform.position -= new Vector3(0, 0, tileSize * (viewDistance * 2 + 1));
                 waterTiles[i].Insert(0,t);
             }
+
+            //Update Terrain
+            for (int i = 0; i < terrainTiles.Count; i++)
+            {
+                TerrainGenerator tg = terrainTiles[i][terrainTiles.Count - 1];
+                terrainTiles[i].RemoveAt(terrainTiles.Count - 1);
+                tg.transform.position -= new Vector3(0, 0, tileSize * (viewDistance * 2 + 1));
+                terrainTiles[i].Insert(0, tg);
+
+                tg.UpdateTerrain();
+            }
         }
         else if (offsetZ > curOffsetZ)
         {
             Debug.Log("oz = " + offsetZ);
             curOffsetZ = offsetZ;
 
-
+            //Update Water
             for (int i = 0; i < waterTiles.Count; i++)
             {
                 GameObject t = waterTiles[i][0];
                 waterTiles[i].RemoveAt(0);
                 t.transform.position += new Vector3(0, 0, tileSize * (viewDistance * 2 + 1));                
                 waterTiles[i].Add(t);
+            }
+
+            //Update Terrain
+            for (int i = 0; i < waterTiles.Count; i++)
+            {
+                TerrainGenerator tg = terrainTiles[i][0];
+                terrainTiles[i].RemoveAt(0);
+                tg.transform.position += new Vector3(0, 0, tileSize * (viewDistance * 2 + 1));
+                terrainTiles[i].Add(tg);
+
+                tg.UpdateTerrain();
             }
         }
     }

@@ -27,6 +27,7 @@ public class TerrainGenerator : MonoBehaviour
         
     }
 
+    // -SQRT(.5) , SQRT(.5) are the Perlin limits.  I use a precalculated const for this.
     const float PERLIN_MIN = 0.70710678118654752440084436210485f;
 
     public void InitializeTerrain()
@@ -63,23 +64,7 @@ public class TerrainGenerator : MonoBehaviour
         float px =0, pz = 0;
         string chunkString = "location x = "+ (transform.position.x / (float)TERRAIN_WIDTH) + "   z = "  + (transform.position.z / (float)TERRAIN_WIDTH);
 
-
         float[,,] alpha1 = new float[terrainData.alphamapResolution, terrainData.alphamapResolution, 3];
-
-        Debug.Log("alphamap Resolution: " + terrainData.alphamapResolution);
-        Debug.Log("heightmap Resolution: " + terrainData.heightmapResolution);
-
-        /*for (int i = 0; i < alpha1.GetLength(0); i++)
-        {
-            for (int j = 0; j < alpha1.GetLength(1); j++)
-            {
-                for (int k = 0; k < alpha1.GetLength(2); k++)
-                {
-                    alpha1[i, j, k] = .5f;
-                }
-            }
-        }*/
-
 
         for (int x = 0; x < vertices; x++)
         {
@@ -119,47 +104,13 @@ public class TerrainGenerator : MonoBehaviour
                     alpha1[z, x, 2] = 1f;
                 }
             }
-            //mapString += "\n";
         }
-        //Debug.Log(mapString);
         
         terrain.terrainData.SetHeights(0, 0, heights);
-
-        /*for (int x = 0; x < alpha1.GetLength(0); x++)
-        {
-            for (int z = 0; z < alpha1.GetLength(1); z++)
-            {
-                float height = terrain.terrainData.GetInterpolatedHeight((float)x / (float)alpha1.GetLength(0), (float)z / (float)alpha1.GetLength(1));
-                Debug.Log(height);
-                if (height <= .5f)
-                {
-                    alpha1[x, z, 0] = 0f;
-                    alpha1[x, z, 1] = 1f;
-                    alpha1[x, z, 2] = 1f;
-                }
-                else if (height > .5f && height < .75f)
-                {
-                    alpha1[x, z, 0] = 1f;
-                    alpha1[x, z, 1] = 0f;
-                    alpha1[x, z, 2] = 1f;
-                }
-                else
-                {
-                    alpha1[x, z, 0] = 1f;
-                    alpha1[x, z, 1] = 1f;
-                    alpha1[x, z, 2] = 0f;
-                }
-            }
-        }*/
-        
 
         terrain.terrainData.SetAlphamaps(0, 0, alpha1);
 
         terrain.Flush();
-
-        chunkString += "  at 16,16  px = " + px * 20 + "  pz = " + pz * 20;
-        Debug.Log(chunkString);
-        
     }
 
     public void SetNeighbors(Terrain left, Terrain right, Terrain top, Terrain bottom)
