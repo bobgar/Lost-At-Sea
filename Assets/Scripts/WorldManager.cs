@@ -42,25 +42,43 @@ public class WorldManager : MonoBehaviour
                 waterTiles[x + viewDistance].Add(tile);
 
                 // Create tiled terrain layer
-                tile = Instantiate(terrainTile, terrainContainer.transform);
-                tile.transform.position = new Vector3(x * tileSize, 0, z * tileSize);
-                TerrainGenerator tg = tile.GetComponent<TerrainGenerator>();
+                TerrainGenerator tg = CreateTerrainTile(x, z);                
                 terrainTiles[x + viewDistance].Add(tg);
-                tg.worldManager = this;
-                tg.InitializeTerrain();
             }
         }
 
-        for (int x = terrainTiles.Count; x <= terrainTiles.Count; x++)
+        SetNeighbors();
+        
+    }
+
+    protected TerrainGenerator CreateTerrainTile(int x, int z)
+    {
+        GameObject tile = Instantiate(terrainTile, terrainContainer.transform);
+        tile.transform.position = new Vector3(Mathf.Floor(x * tileSize), 0, Mathf.Floor(z * tileSize));
+        TerrainGenerator tg = tile.GetComponent<TerrainGenerator>();
+        tg.worldManager = this;
+        tg.InitializeTerrain();
+        return tg;
+    }
+
+    void SetNeighbors()
+    {
+        for (int x = terrainTiles.Count; x < terrainTiles.Count; x++)
         {
-            for (int z = -terrainTiles.Count; z <= terrainTiles.Count; z++)
+            for (int z = -terrainTiles.Count; z < terrainTiles.Count; z++)
             {
                 terrainTiles[x][z].SetNeighbors(x < 0 ? null : terrainTiles[x - 1][z].terrain,
                     x > terrainTiles.Count - 1 ? null : terrainTiles[x + 1][z].terrain,
                     z < 0 ? null : terrainTiles[x][z - 1].terrain,
                     z > terrainTiles.Count - 1 ? null : terrainTiles[x][z + 1].terrain);
+                terrainTiles[x][z].terrain.Flush();
             }
         }
+    }
+
+    void SnapTerrain(GameObject g)
+    {
+        //g.transform.position += new Vector3(Mathf.Floor(g.transform.position.x), Mathf.Floor(g.transform.position.y), Mathf.Floor(g.transform.position.z));
     }
 
     // Update is called once per frame
@@ -75,21 +93,24 @@ public class WorldManager : MonoBehaviour
             for (int i = 0; i < waterTiles.Count; i++)
             {
                 waterTiles[waterTiles.Count - 1][i].transform.position -= new Vector3(tileSize * (viewDistance * 2 + 1), 0, 0);
-            }
+            } 
             List<GameObject> tileList = waterTiles[waterTiles.Count - 1];
             waterTiles.RemoveAt(waterTiles.Count - 1);
             waterTiles.Insert(0, tileList);
 
+
             //Update Terrain
+            List<TerrainGenerator> terrainList = new List<TerrainGenerator>();
             for (int i = 0; i < terrainTiles.Count; i++)
-            {
-                terrainTiles[terrainTiles.Count - 1][i].transform.position += new Vector3(tileSize * (viewDistance * 2 + 1), 0, 0);
-                terrainTiles[terrainTiles.Count - 1][i].UpdateTerrain();
+            {                
+                Destroy(terrainTiles[terrainTiles.Count - 1][i].gameObject);                
+                TerrainGenerator tg = CreateTerrainTile(curOffsetX - terrainTiles.Count/2, i + curOffsetZ - terrainTiles.Count / 2);                
+                terrainList.Add(tg);
             }
-            List<TerrainGenerator> terrainList = terrainTiles[terrainTiles.Count - 1];
+            //List<TerrainGenerator> terrainList = terrainTiles[terrainTiles.Count - 1];
             terrainTiles.RemoveAt(terrainTiles.Count - 1);
             terrainTiles.Insert(0, terrainList);
-
+            SetNeighbors();
         } else if (offsetX > curOffsetX) {
             Debug.Log("ox = " + offsetX );
             curOffsetX = offsetX;
@@ -104,14 +125,16 @@ public class WorldManager : MonoBehaviour
             waterTiles.Add(tileList);
 
             //Update Terrain
+            List<TerrainGenerator> terrainList = new List<TerrainGenerator>();
             for (int i = 0; i < terrainTiles.Count; i++)
             {
-                terrainTiles[0][i].transform.position += new Vector3(tileSize * (viewDistance * 2 + 1), 0, 0);
-                terrainTiles[0][i].UpdateTerrain();
-            }
-            List<TerrainGenerator> terrainList = terrainTiles[0];
+                Destroy(terrainTiles[0][i].gameObject);
+                TerrainGenerator tg = CreateTerrainTile(curOffsetX + terrainTiles.Count / 2, i + curOffsetZ - terrainTiles.Count / 2);
+                terrainList.Add(tg);
+            }            
             terrainTiles.RemoveAt(0);
             terrainTiles.Add(terrainList);
+            SetNeighbors();
         }
 
         int offsetZ = (int)(Camera.transform.position.z / tileSize);
@@ -132,13 +155,12 @@ public class WorldManager : MonoBehaviour
             //Update Terrain
             for (int i = 0; i < terrainTiles.Count; i++)
             {
-                TerrainGenerator tg = terrainTiles[i][terrainTiles.Count - 1];
+                Destroy( terrainTiles[i][terrainTiles.Count - 1]);
                 terrainTiles[i].RemoveAt(terrainTiles.Count - 1);
-                tg.transform.position -= new Vector3(0, 0, tileSize * (viewDistance * 2 + 1));
+                TerrainGenerator tg = CreateTerrainTile(curOffsetX + i - terrainTiles.Count / 2, curOffsetZ - terrainTiles.Count / 2);
                 terrainTiles[i].Insert(0, tg);
-
-                tg.UpdateTerrain();
             }
+            SetNeighbors();
         }
         else if (offsetZ > curOffsetZ)
         {
@@ -157,13 +179,12 @@ public class WorldManager : MonoBehaviour
             //Update Terrain
             for (int i = 0; i < waterTiles.Count; i++)
             {
-                TerrainGenerator tg = terrainTiles[i][0];
+                Destroy( terrainTiles[i][0].gameObject);
                 terrainTiles[i].RemoveAt(0);
-                tg.transform.position += new Vector3(0, 0, tileSize * (viewDistance * 2 + 1));
+                TerrainGenerator tg = CreateTerrainTile(curOffsetX + i - terrainTiles.Count / 2, curOffsetZ + terrainTiles.Count / 2);
                 terrainTiles[i].Add(tg);
-
-                tg.UpdateTerrain();
             }
+            SetNeighbors();
         }
     }
 }
