@@ -17,16 +17,16 @@
     SubShader
     {
         // Would do transparency, but I'm turning it off
-        /*Tags
+        Tags
         {
             "Queue" = "Transparent"
-        }*/
+        }
 
         Pass
         {
             // Would do transparency, but I'm turning it off
-            //Blend SrcAlpha OneMinusSrcAlpha
-            //ZWrite Off
+            Blend SrcAlpha OneMinusSrcAlpha
+            ZWrite Off
 
 			CGPROGRAM
             #define SMOOTHSTEP_AA 0.01

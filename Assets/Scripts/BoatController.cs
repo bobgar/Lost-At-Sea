@@ -58,7 +58,7 @@ public class BoatController : MonoBehaviour
 
         Vector3 cameraTarget = transform.position - transform.forward * 10f;
 
-        Camera.transform.position = Vector3.Lerp(Camera.transform.position, new Vector3(cameraTarget.x, Camera.transform.position.y, cameraTarget.z) , .3f);
+        Camera.transform.position = Vector3.Lerp(Camera.transform.position, new Vector3(cameraTarget.x, Camera.transform.position.y, cameraTarget.z) , .1f);
         Camera.transform.LookAt(transform);
 
         if(velocity.magnitude > 0.3f)
