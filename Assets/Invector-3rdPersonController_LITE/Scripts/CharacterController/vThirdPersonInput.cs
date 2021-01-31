@@ -13,6 +13,8 @@ namespace Invector.vCharacterController
         public KeyCode jumpInput = KeyCode.Space;
         public KeyCode strafeInput = KeyCode.Tab;
         public KeyCode sprintInput = KeyCode.LeftShift;
+        public bool SetPosition = true;
+        public Vector3 PositionToSet;
 
         [Header("Camera Input")]
         public string rotateCameraXInput = "Mouse X";
@@ -33,13 +35,19 @@ namespace Invector.vCharacterController
         protected virtual void Start()
         {
             InitilizeController();
-            InitializeTpCamera();
+            //InitializeTpCamera();
 
             Camera = Camera.main;
+
+            if (SetPosition)
+            {
+                transform.position = PositionToSet;
+            }
         }
 
         protected virtual void FixedUpdate()
         {
+
             if (Input.GetKey(KeyCode.Space))
             {
                 worldManager.SwitchToBoat();
@@ -59,6 +67,12 @@ namespace Invector.vCharacterController
         {
             InputHandle();                  // update the input methods
             cc.UpdateAnimator();            // updates the Animator Parameters
+
+            if (SetPosition)
+            {
+                transform.position = PositionToSet;
+                SetPosition = false;
+            }
         }
 
         public virtual void OnAnimatorMove()

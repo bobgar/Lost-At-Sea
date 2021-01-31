@@ -15,7 +15,7 @@ public class WorldManager : MonoBehaviour
     public GameObject terrainContainer;
     private List<List<GameObject>> waterTiles = new List<List<GameObject>>();
     private List<List<TerrainGenerator>> terrainTiles = new List<List<TerrainGenerator>>();
-    public vThirdPersonController character;
+    public vThirdPersonInput character;
     public PhysicsBoatController boat;
 
     protected int curOffsetX = 0;
@@ -214,6 +214,8 @@ public class WorldManager : MonoBehaviour
         boat.attached = false;
         character.gameObject.SetActive(true);
         character.transform.position = boat.transform.position + new Vector3(0,.5f,0) + boat.transform.right * 2;
+        character.PositionToSet = boat.transform.position + new Vector3(0, .5f, 0) + boat.transform.right * 2;
+        character.SetPosition = true;
         switchTimestamp = Time.timeSinceLevelLoad;
     }
 

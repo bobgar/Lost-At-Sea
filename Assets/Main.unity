@@ -5287,7 +5287,7 @@ MonoBehaviour:
   terrainTile: {fileID: 354616017432645556, guid: 6afa08a164dea214ab7692c4139ba9e3,
     type: 3}
   terrainContainer: {fileID: 1601156990}
-  character: {fileID: 2095879269}
+  character: {fileID: 2095879268}
   boat: {fileID: 1846474124}
   landFeatures:
   - {fileID: 7879856551737253694, guid: ae5543b94e42f4445aff1aa2b9f53bd0, type: 3}
@@ -5783,16 +5783,16 @@ Transform:
   m_Father: {fileID: 1540417096}
   m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &2095879269 stripped
+--- !u!114 &2095879268 stripped
 MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 4425428723088313503, guid: fc9b148a2950aaf4cba8422632222c5d,
+  m_CorrespondingSourceObject: {fileID: 4425428723088313502, guid: fc9b148a2950aaf4cba8422632222c5d,
     type: 3}
   m_PrefabInstance: {fileID: 1873615612}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 73fbf3aa05f6be24780438449f505aa3, type: 3}
+  m_Script: {fileID: 11500000, guid: 5deb9ff5611cb9d4596d397ac57ee8c7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &2103179452
