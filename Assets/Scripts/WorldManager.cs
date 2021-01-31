@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class WorldManager : MonoBehaviour
 {
+    
     const int tileSize = 40;
     protected Camera Camera;
     public int viewDistance = 8;
@@ -17,13 +18,16 @@ public class WorldManager : MonoBehaviour
     protected int curOffsetX = 0;
     protected int curOffsetZ = 0;
 
+    public GameObject[] landFeatures;
+
     public FastNoise Noise { get; set; }
+    public FastNoise Noise2 { get; set; }
 
     private void Awake()
     {
         //System.DateTime time = new System.DateTime();
-        Noise = new FastNoise(System.DateTime.Now.Second);
-        Debug.Log(Noise.GetSimplexFractal(0, 0));
+        Noise = new FastNoise(System.DateTime.Now.Millisecond);
+        Noise2 = new FastNoise(System.DateTime.Now.Millisecond + 5);
     }
 
     // Start is called before the first frame update
@@ -185,6 +189,11 @@ public class WorldManager : MonoBehaviour
                 terrainTiles[i].Add(tg);
             }
             SetNeighbors();
-        }
+        } 
+    }
+
+    public GameObject GetLandFeature()
+    {
+        return landFeatures[Random.Range(0, landFeatures.Length)];
     }
 }

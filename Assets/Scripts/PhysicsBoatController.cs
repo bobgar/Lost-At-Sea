@@ -27,13 +27,26 @@ public class PhysicsBoatController : MonoBehaviour
     {
         if (!attached) { return; }
 
+        bool isUpsideDown = Vector3.Dot(transform.up, new Vector3(0, 1, 0)) < 0;
+        
         bool touchingWater = false;
-        foreach(GameObject g in buoyancyPoints)
+
+        if (isUpsideDown)
         {
-            if (g.transform.position.y < buoyancyLevel)
+            if(transform.position.y < 3)
             {
-                rigidBody.AddForceAtPosition(new Vector3(0, 1, 0) * (buoyancyLevel - transform.position.y) * buoyancyForce, g.transform.position);
-                touchingWater = true;
+                Debug.Log("YOU'RE SUNK!");
+            }
+        }
+        else
+        {
+            foreach (GameObject g in buoyancyPoints)
+            {
+                if (g.transform.position.y < buoyancyLevel)
+                {
+                    rigidBody.AddForceAtPosition(new Vector3(0, 1, 0) * (buoyancyLevel - transform.position.y) * buoyancyForce, g.transform.position);
+                    touchingWater = true;
+                }
             }
         }
 
@@ -80,6 +93,8 @@ public class PhysicsBoatController : MonoBehaviour
 
         Camera.transform.position = Vector3.Lerp(Camera.transform.position, new Vector3(cameraTarget.x, Camera.transform.position.y, cameraTarget.z), .1f);
         Camera.transform.LookAt(transform);
+
+
     }
 
 
