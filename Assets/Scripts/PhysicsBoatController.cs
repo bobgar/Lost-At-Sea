@@ -18,6 +18,7 @@ public class PhysicsBoatController : MonoBehaviour
     public float enginePower = 50f;
     public float turnPower = 50f;
 
+    public bool sinking = false;
     public void Awake()
     {
         Camera = Camera.main;
@@ -33,9 +34,9 @@ public class PhysicsBoatController : MonoBehaviour
 
         if (isUpsideDown)
         {
-            if(transform.position.y < 3)
+            if(transform.position.y < 0)
             {
-                Debug.Log("YOU'RE SUNK!");
+                sinking = true;
             }
         }
         else
@@ -57,6 +58,8 @@ public class PhysicsBoatController : MonoBehaviour
         {
             worldManager.SwitchToCharacter();
         }
+
+        if (sinking) return;
 
         if (touchingWater)
         {
@@ -81,7 +84,7 @@ public class PhysicsBoatController : MonoBehaviour
             //Backwards
             if (Input.GetKey(KeyCode.S))
             {
-
+                rigidBody.AddForce(- new Vector3(transform.forward.x, 0, transform.forward.z) * enginePower / 3.0f);
             }
         }
 

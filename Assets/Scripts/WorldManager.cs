@@ -5,6 +5,7 @@ using Invector.vCharacterController;
 
 public class WorldManager : MonoBehaviour
 {
+    const float MIN_SWITCH_TIME = 1f;
     public MessageManager messageManager;
 
     public int maxHealth = 200;
@@ -22,6 +23,7 @@ public class WorldManager : MonoBehaviour
     public vThirdPersonInput characterPrefab;
     public vThirdPersonInput character;
     public PhysicsBoatController boat;
+    public RescueShip rescueShip;
 
     protected int curOffsetX = 0;
     protected int curOffsetZ = 0;
@@ -102,15 +104,29 @@ public class WorldManager : MonoBehaviour
 
         healthBar.transform.localScale = new Vector3((float)health / (float)maxHealth, 1f);
 
-        if (health == 0)
+        if (health <= 0)
         {
-            if (character != null)
-            {
-                Destroy(character.gameObject);
-            }
-            boat.attached = false;
-            messageManager.ShowMessage("gameover");
+            GameOver();
         }
+    }
+
+    public void GameOver()
+    {
+        if(character != null)
+        {
+            Destroy(character.gameObject);
+        }
+        boat.attached = false;
+        messageManager.ShowMessagePermanent("gameover");
+    }
+    public void Win()
+    {
+        if (character != null)
+        {
+            Destroy(character.gameObject);
+        }
+        boat.attached = false;
+        messageManager.ShowMessagePermanent("win");
     }
 
     // Update is called once per frame
@@ -121,6 +137,10 @@ public class WorldManager : MonoBehaviour
         {
             healthDeductionTimeStamp = Time.timeSinceLevelLoad;
             if (character != null && character.transform.position.y < -1.7f)
+            {
+                UpdateHealth(-10);
+            } 
+            else if(boat.attached && boat.sinking)
             {
                 UpdateHealth(-10);
             }
@@ -202,7 +222,7 @@ public class WorldManager : MonoBehaviour
             //Update Terrain
             for (int i = 0; i < terrainTiles.Count; i++)
             {
-                Destroy( terrainTiles[i][terrainTiles.Count - 1]);
+                Destroy( terrainTiles[i][terrainTiles.Count - 1].gameObject);
                 terrainTiles[i].RemoveAt(terrainTiles.Count - 1);
                 TerrainGenerator tg = CreateTerrainTile(curOffsetX + i - terrainTiles.Count / 2, curOffsetZ - terrainTiles.Count / 2);
                 terrainTiles[i].Insert(0, tg);
@@ -224,7 +244,7 @@ public class WorldManager : MonoBehaviour
             }
 
             //Update Terrain
-            for (int i = 0; i < waterTiles.Count; i++)
+            for (int i = 0; i < terrainTiles.Count; i++)
             {
                 Destroy( terrainTiles[i][0].gameObject);
                 terrainTiles[i].RemoveAt(0);
@@ -236,15 +256,15 @@ public class WorldManager : MonoBehaviour
     }
 
     private bool characterPlaced = false;
-    public GameObject GetLandFeature()
+    public Collectable GetLandFeature()
     {
-        return landFeatures[Random.Range(0, landFeatures.Length)].gameObject;
+        return landFeatures[Random.Range(0, landFeatures.Length)];
     }
 
     private float switchTimestamp = 0f;
     public void SwitchToCharacter()
     {
-        if (Time.timeSinceLevelLoad - switchTimestamp < 5) { return; }
+        if (Time.timeSinceLevelLoad - switchTimestamp < MIN_SWITCH_TIME) { return; }
         boat.attached = false;
         character = Instantiate(characterPrefab);
         character.worldManager = this;
@@ -256,7 +276,7 @@ public class WorldManager : MonoBehaviour
     {
         if ((character.transform.position - boat.transform.position).magnitude < 10)
         {
-            if (Time.timeSinceLevelLoad - switchTimestamp < 5) { return; }
+            if (Time.timeSinceLevelLoad - switchTimestamp < MIN_SWITCH_TIME) { return; }
             Destroy(character.gameObject);
             character = null;
             boat.attached = true;
@@ -268,5 +288,14 @@ public class WorldManager : MonoBehaviour
     {
         cluesFound++;
         messageManager.ShowMessage("clue");
+    }
+
+    public RescueShip CheckRescueShip()
+    {
+        if(Random.RandomRange(0,5000) < Mathf.Pow( cluesFound, 2))
+        {
+            return rescueShip;
+        }
+        return null;
     }
 }

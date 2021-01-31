@@ -5850,6 +5850,8 @@ MonoBehaviour:
     type: 3}
   character: {fileID: 0}
   boat: {fileID: 1846474124}
+  rescueShip: {fileID: 3972017722566658862, guid: 5ea2bd1ef108a71489a503b644ae42bd,
+    type: 3}
   landFeatures:
   - {fileID: 7879648055540826427, guid: ae5543b94e42f4445aff1aa2b9f53bd0, type: 3}
   - {fileID: 2868282071136526510, guid: da8487dc5b3a52d4c824f9b6c5463594, type: 3}

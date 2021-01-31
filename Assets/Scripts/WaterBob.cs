@@ -8,18 +8,18 @@ public class WaterBob : MonoBehaviour
     [SerializeField]
     float period = 1;
 
-    private Vector3 initialPosition;
+    public Vector3 InitailPosition;
     private float offset;
 
     private void Awake()
     {
-        initialPosition = transform.position;
+        InitailPosition = transform.position;
 
         offset = 1 - (Random.value * 2);
     }
 
     private void Update()
     {
-        transform.position = initialPosition - Vector3.up * Mathf.Sin((Time.time + offset) * period) * height;
+        transform.position = InitailPosition - Vector3.up * Mathf.Sin((Time.time + offset) * period) * height;
     }
 }

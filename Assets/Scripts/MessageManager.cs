@@ -57,4 +57,13 @@ public class MessageManager : MonoBehaviour
         activeMessage.SetActive(true);
         stopTime = Time.timeSinceLevelLoad + fadeDuration;
     }
+
+    public void ShowMessagePermanent(string key)
+    {
+        if (!messageDictionary.ContainsKey(key))
+        {
+            return;
+        }
+        messageDictionary[key].SetActive(true);
+    }
 }

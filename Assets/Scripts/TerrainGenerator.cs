@@ -20,7 +20,8 @@ public class TerrainGenerator : MonoBehaviour
     public Terrain terrain;
     protected TerrainData terrainData;
 
-    private Vector3 highestPoint = Vector3.zero;
+    public Vector3 highestPoint = Vector3.zero;
+    static int totalPlacedObjectCount = 0;
 
     // Start is called before the first frame update
     void Start()
@@ -60,21 +61,26 @@ public class TerrainGenerator : MonoBehaviour
         terrain.terrainData = terrainData;
 
         UpdateTerrain();
-        
+
+        name = transform.position.x + " , " + transform.position.z;        
+
         //If we have a high point to place an object, 10% of the time place one!
-        if (highestPoint.y > .65f)
+        if (highestPoint.y > .63f)
         {
-            if (Random.Range(0, 10) < 1)
+            //Debug.Log("name: " + name + "   Highest Point: " + highestPoint);
+            if (Random.Range(0, 15) < 1)
             {
-                Debug.Log("Placing Feature");
+                totalPlacedObjectCount++;
+                //Debug.Log("Placing Feature: " + totalPlacedObjectCount);
 
                 float h = terrain.SampleHeight(transform.position + highestPoint);
-                Vector3 p = transform.position + new Vector3(highestPoint.x, 0, highestPoint.z) + new Vector3(0, h, 0);
+                Vector3 p = transform.position + new Vector3(highestPoint.x , 0, highestPoint.z ) + new Vector3(0, h, 0);
                 RaycastHit hit;
-                if (Physics.Raycast(p, Vector3.down, out hit))
+                if (Physics.Raycast(p + Vector3.up, Vector3.down, out hit))
                 {
-                    GameObject go = worldManager.GetLandFeature();
-                    GameObject igo = Instantiate(go, transform);
+                    Collectable c = worldManager.GetLandFeature();                    
+                    GameObject igo = Instantiate(c.gameObject, transform);
+                    igo.GetComponent<Collectable>().worldManager = worldManager;
 
                     igo.transform.rotation = Quaternion.FromToRotation(Vector3.up, hit.normal);
                     //igo.transform.Rotate(new Vector3(0, Random.rotation.eulerAngles.y, 0));
@@ -83,9 +89,21 @@ public class TerrainGenerator : MonoBehaviour
                 }
             }
         }
+        else if(highestPoint.y < .55f)
+        {
+            //Cance to spawn win based on clues
+            RescueShip rs = worldManager.CheckRescueShip();
+            if(rs != null)
+            {
+                GameObject igo = Instantiate(rs.gameObject, transform);
+                igo.GetComponent<RescueShip>().worldManager = worldManager;
+                igo.transform.position = new Vector3(transform.position.x + TERRAIN_WIDTH / 2.0f, igo.transform.position.y - transform.position.y, transform.position.z + TERRAIN_WIDTH / 2.0f);
+                igo.GetComponent<WaterBob>().InitailPosition = igo.transform.position;
+            }
+        }
         else
         {
-            //Instantiate water point of interest
+            //Instantiate water point of interest ?
         }
     }
 
@@ -96,8 +114,9 @@ public class TerrainGenerator : MonoBehaviour
         float px =0, pz = 0;
         string chunkString = "location x = "+ (transform.position.x / (float)TERRAIN_WIDTH) + "   z = "  + (transform.position.z / (float)TERRAIN_WIDTH);
 
-        float[,,] alpha1 = new float[terrainData.alphamapResolution, terrainData.alphamapResolution, 3];        
-
+        float[,,] alpha1 = new float[terrainData.alphamapResolution, terrainData.alphamapResolution, 3];
+        float curHighestPoint = 0;
+        float vertexToWorld  = (float)TERRAIN_WIDTH / (float)vertices;
         for (int x = 0; x < vertices; x++)
         {
             for(int z = 0; z < vertices; z++)
@@ -108,9 +127,10 @@ public class TerrainGenerator : MonoBehaviour
 
                 float height = ((worldManager.Noise.GetSimplexFractal( px * 20 , pz * 20 ) + PERLIN_MIN) / (PERLIN_MIN*2)) * .4f + ((worldManager.Noise2.GetSimplexFractal(px * 2, pz * 2) + PERLIN_MIN) / (PERLIN_MIN * 2)) * .6f ;
 
-                if( (height ) > highestPoint.y)
+                if( height  > curHighestPoint)
                 {
-                    highestPoint = new Vector3(x, (height), z);
+                    highestPoint = new Vector3(x * vertexToWorld, height, z * vertexToWorld);
+                    curHighestPoint = height;
                 }
 
                 heights[z, x] = height;
