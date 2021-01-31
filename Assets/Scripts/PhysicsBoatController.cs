@@ -59,10 +59,8 @@ public class PhysicsBoatController : MonoBehaviour
             //You can roll your boat!  Roll roll roll your boat!
             if (Input.GetKey(KeyCode.E) && worldManager.character != null && (worldManager.character.transform.position - this.transform.position).magnitude < 4f )
             {
-                if (Vector3.Dot(worldManager.character.transform.right, this.transform.forward) > 0)
-                    rigidBody.AddTorque(new Vector3(20, 0, 0));
-                else
-                    rigidBody.AddTorque(new Vector3(-20, 0, 0));
+                Vector3 pushPoint = worldManager.character.transform.position + new Vector3(0, -2f, 0);
+                rigidBody.AddForceAtPosition(worldManager.character.transform.up  * 5, pushPoint);
             }
 
             return; 
