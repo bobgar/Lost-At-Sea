@@ -13,6 +13,9 @@ public class PhysicsBoatController : MonoBehaviour
 
     public GameObject[] buoyancyPoints;
     public float buoyancyLevel = 0.5f;
+    public float buoyancyForce = 20f;
+    public float enginePower = 50f;
+    public float turnPower = 50f;
 
     public void Awake()
     {
@@ -29,7 +32,7 @@ public class PhysicsBoatController : MonoBehaviour
         {
             if (g.transform.position.y < buoyancyLevel)
             {
-                rigidBody.AddForceAtPosition(new Vector3(0, 1, 0) * (buoyancyLevel - transform.position.y) * 20, g.transform.position);
+                rigidBody.AddForceAtPosition(new Vector3(0, 1, 0) * (buoyancyLevel - transform.position.y) * buoyancyForce, g.transform.position);
                 touchingWater = true;
             }
         }
@@ -39,19 +42,19 @@ public class PhysicsBoatController : MonoBehaviour
             //Left
             if (Input.GetKey(KeyCode.A))
             {
-                rigidBody.AddTorque(new Vector3(0, -25f, 0));
+                rigidBody.AddTorque(new Vector3(0, -turnPower, 0));
             }
 
             //Right
             if (Input.GetKey(KeyCode.D))
             {
-                rigidBody.AddTorque(new Vector3(0, 25f, 0));
+                rigidBody.AddTorque(new Vector3(0, turnPower, 0));
             }
 
             //Forward
             if (Input.GetKey(KeyCode.W))
             {
-                rigidBody.AddForce(new Vector3(transform.forward.x, 0, transform.forward.z) * 25f);
+                rigidBody.AddForce(new Vector3(transform.forward.x, 0, transform.forward.z) * enginePower);
             }
 
             //Backwards
