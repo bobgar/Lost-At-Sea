@@ -59,9 +59,7 @@ public class PhysicsBoatController : MonoBehaviour
             worldManager.SwitchToCharacter();
         }
 
-        if (sinking) return;
-
-        if (touchingWater)
+        if (touchingWater && !sinking)
         {
             //Left
             if (Input.GetKey(KeyCode.A))
