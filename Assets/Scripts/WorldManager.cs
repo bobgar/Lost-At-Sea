@@ -5,6 +5,8 @@ using Invector.vCharacterController;
 
 public class WorldManager : MonoBehaviour
 {
+    private bool gameComplete = false;
+
     const float MIN_SWITCH_TIME = 1f;
     public MessageManager messageManager;
 
@@ -118,6 +120,7 @@ public class WorldManager : MonoBehaviour
         }
         boat.attached = false;
         messageManager.ShowMessagePermanent("gameover");
+        gameComplete = true;
     }
     public void Win()
     {
@@ -127,12 +130,15 @@ public class WorldManager : MonoBehaviour
         }
         boat.attached = false;
         messageManager.ShowMessagePermanent("win");
+        gameComplete = true;
     }
 
     // Update is called once per frame
     private float healthDeductionTimeStamp;
     void Update()
     {
+        if (gameComplete) return;
+
         if(Time.timeSinceLevelLoad - healthDeductionTimeStamp > 1f)
         {
             healthDeductionTimeStamp = Time.timeSinceLevelLoad;
