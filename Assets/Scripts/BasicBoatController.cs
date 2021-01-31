@@ -2,7 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-public class BoatController : MonoBehaviour
+public class BasicBoatController : MonoBehaviour
 {
     public ParticleSystem ps;
 

@@ -110,6 +110,9 @@ public class TerrainGenerator : MonoBehaviour
 
         terrain.terrainData.SetAlphamaps(0, 0, alpha1);
 
+        TerrainCollider tc = terrain.GetComponent<TerrainCollider>();
+        tc.terrainData = terrain.terrainData;        
+
         terrain.Flush();
     }
 
