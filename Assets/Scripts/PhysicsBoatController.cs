@@ -27,7 +27,7 @@ public class PhysicsBoatController : MonoBehaviour
     public void FixedUpdate()
     {
 
-        bool isUpsideDown = Vector3.Dot(transform.up, new Vector3(0, 1, 0)) < 0;
+        bool isUpsideDown =  Vector3.Dot(transform.up, new Vector3(0, 1, 0)) < .3f;
         
         bool touchingWater = false;
 
@@ -44,7 +44,8 @@ public class PhysicsBoatController : MonoBehaviour
             {
                 if (g.transform.position.y < buoyancyLevel)
                 {
-                    rigidBody.AddForceAtPosition(new Vector3(0, 1, 0) * (buoyancyLevel - transform.position.y) * buoyancyForce, g.transform.position);
+                    float b = (float) Math.Pow((buoyancyLevel - transform.position.y), 2);
+                    rigidBody.AddForceAtPosition(new Vector3(0, 1, 0) * b * buoyancyForce, g.transform.position);
                     touchingWater = true;
                 }
             }
