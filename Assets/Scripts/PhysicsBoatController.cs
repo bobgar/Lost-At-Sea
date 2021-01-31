@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 public class PhysicsBoatController : MonoBehaviour
 {
+    public WorldManager worldManager;
     public ParticleSystem ps;
 
     protected Camera Camera;
@@ -25,7 +26,6 @@ public class PhysicsBoatController : MonoBehaviour
 
     public void FixedUpdate()
     {
-        if (!attached) { return; }
 
         bool isUpsideDown = Vector3.Dot(transform.up, new Vector3(0, 1, 0)) < 0;
         
@@ -48,6 +48,13 @@ public class PhysicsBoatController : MonoBehaviour
                     touchingWater = true;
                 }
             }
+        }
+
+        if (!attached) { return; }
+
+        if (Input.GetKey(KeyCode.Space))
+        {
+            worldManager.SwitchToCharacter();
         }
 
         if (touchingWater)
@@ -80,7 +87,7 @@ public class PhysicsBoatController : MonoBehaviour
         if (rigidBody.velocity.magnitude > 0.3f)
         {
             ParticleSystem.EmissionModule emission = ps.emission;
-            emission.rate = 50 * (rigidBody.velocity.magnitude - .3f);
+            emission.rateOverTime = (rigidBody.velocity.magnitude - 1f);
             emission.enabled = true;
         }
         else

@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Invector.vCharacterController;
 
 public class TerrainGenerator : MonoBehaviour
 {
@@ -59,14 +60,24 @@ public class TerrainGenerator : MonoBehaviour
         terrain.terrainData = terrainData;
 
         UpdateTerrain();
-        Debug.Log("heighpoint = " + highestPoint);
+        //Debug.Log("heighpoint = " + highestPoint);
         if (highestPoint.y > .7f)
         {
             Debug.Log("Placing Feature");
             GameObject go = worldManager.GetLandFeature();
-            GameObject igo = Instantiate(go, transform);
+            GameObject igo;
+            if (go.GetComponent<vThirdPersonController>() != null)
+            {
+                //igo = Instantiate(go);                
+                igo = go;             
+            }
+            else
+            {
+                igo = Instantiate(go, transform);
+            }
+            
             float h = terrain.SampleHeight(transform.position + highestPoint);
-            igo.transform.position = transform.position + new Vector3(highestPoint.x, 0, highestPoint.z) + new Vector3(0,h,0);
+            igo.transform.position = transform.position + new Vector3(highestPoint.x, 0, highestPoint.z) + new Vector3(0,h,0);            
         }
         else
         {
