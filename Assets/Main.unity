@@ -6298,15 +6298,15 @@ MonoBehaviour:
     Space - Embark / Disembark
 
     E - Find clue / Eat
-    food)
+    food / Roll Ship
 
     H - Toggle Help
 
 
     Eat food to stay alive.
 
-    Find clues to increase
-    rescue ship spawn chance.
+    Find
+    clues to increase rescue ship spawn chance.
 
     Find a rescue ship to win!'
   m_isRightToLeft: 0

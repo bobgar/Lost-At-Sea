@@ -41,6 +41,8 @@ public class PhysicsBoatController : MonoBehaviour
         }
         else
         {
+            sinking = false;
+
             foreach (GameObject g in buoyancyPoints)
             {
                 if (g.transform.position.y < buoyancyLevel)
@@ -52,7 +54,19 @@ public class PhysicsBoatController : MonoBehaviour
             }
         }
 
-        if (!attached) { return; }
+        if (!attached) 
+        {
+            //You can roll your boat!  Roll roll roll your boat!
+            if (Input.GetKey(KeyCode.E) && worldManager.character != null && (worldManager.character.transform.position - this.transform.position).magnitude < 4f )
+            {
+                if (Vector3.Dot(worldManager.character.transform.right, this.transform.forward) > 0)
+                    rigidBody.AddTorque(new Vector3(20, 0, 0));
+                else
+                    rigidBody.AddTorque(new Vector3(-20, 0, 0));
+            }
+
+            return; 
+        }
 
         if (Input.GetKey(KeyCode.Space))
         {
@@ -102,6 +116,5 @@ public class PhysicsBoatController : MonoBehaviour
 
         Camera.transform.position = Vector3.Lerp(Camera.transform.position, new Vector3(cameraTarget.x, Camera.transform.position.y, cameraTarget.z), .1f);
         Camera.transform.LookAt(transform);
-
     }
 }
