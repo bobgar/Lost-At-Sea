@@ -60,24 +60,28 @@ public class TerrainGenerator : MonoBehaviour
         terrain.terrainData = terrainData;
 
         UpdateTerrain();
-        //Debug.Log("heighpoint = " + highestPoint);
-        if (highestPoint.y > .7f)
+        
+        //If we have a high point to place an object, 10% of the time place one!
+        if (highestPoint.y > .65f)
         {
-            Debug.Log("Placing Feature");
-            GameObject go = worldManager.GetLandFeature();
-            GameObject igo;
-            if (go.GetComponent<vThirdPersonController>() != null)
+            if (Random.Range(0, 10) < 1)
             {
-                //igo = Instantiate(go);                
-                igo = go;             
+                Debug.Log("Placing Feature");
+
+                float h = terrain.SampleHeight(transform.position + highestPoint);
+                Vector3 p = transform.position + new Vector3(highestPoint.x, 0, highestPoint.z) + new Vector3(0, h, 0);
+                RaycastHit hit;
+                if (Physics.Raycast(p, Vector3.down, out hit))
+                {
+                    GameObject go = worldManager.GetLandFeature();
+                    GameObject igo = Instantiate(go, transform);
+
+                    igo.transform.rotation = Quaternion.FromToRotation(Vector3.up, hit.normal);
+                    //igo.transform.Rotate(new Vector3(0, Random.rotation.eulerAngles.y, 0));
+
+                    igo.transform.position = p;
+                }
             }
-            else
-            {
-                igo = Instantiate(go, transform);
-            }
-            
-            float h = terrain.SampleHeight(transform.position + highestPoint);
-            igo.transform.position = transform.position + new Vector3(highestPoint.x, 0, highestPoint.z) + new Vector3(0,h,0);            
         }
         else
         {

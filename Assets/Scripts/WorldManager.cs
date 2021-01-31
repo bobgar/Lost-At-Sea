@@ -5,7 +5,11 @@ using Invector.vCharacterController;
 
 public class WorldManager : MonoBehaviour
 {
-    
+    public MessageManager messageManager;
+
+    public int maxHealth = 200;
+    public int health = 200;
+    public GameObject healthBar;
     const int tileSize = 40;
     protected Camera Camera;
     public int viewDistance = 8;
@@ -16,17 +20,19 @@ public class WorldManager : MonoBehaviour
     private List<List<GameObject>> waterTiles = new List<List<GameObject>>();
     private List<List<TerrainGenerator>> terrainTiles = new List<List<TerrainGenerator>>();
     public vThirdPersonInput characterPrefab;
-    protected vThirdPersonInput character;
+    public vThirdPersonInput character;
     public PhysicsBoatController boat;
 
     protected int curOffsetX = 0;
     protected int curOffsetZ = 0;
 
-    public GameObject[] landFeatures;
+    public Collectable[] landFeatures;
 
     public FastNoise Noise { get; set; }
     public FastNoise Noise2 { get; set; }
 
+
+    private int cluesFound = 0;
     private void Awake()
     {
         //System.DateTime time = new System.DateTime();
@@ -56,6 +62,8 @@ public class WorldManager : MonoBehaviour
         }
 
         SetNeighbors();
+
+        messageManager.ShowMessage("start");
     }
 
     protected TerrainGenerator CreateTerrainTile(int x, int z)
@@ -83,14 +91,46 @@ public class WorldManager : MonoBehaviour
         }
     }
 
-    void SnapTerrain(GameObject g)
+    
+    
+    public void UpdateHealth(int healthChange)
     {
-        //g.transform.position += new Vector3(Mathf.Floor(g.transform.position.x), Mathf.Floor(g.transform.position.y), Mathf.Floor(g.transform.position.z));
+        health += healthChange;
+
+        health = health < 0 ? 0 : health;
+        health = health > maxHealth ? maxHealth : health;
+
+        healthBar.transform.localScale = new Vector3((float)health / (float)maxHealth, 1f);
+
+        if (health == 0)
+        {
+            if (character != null)
+            {
+                Destroy(character.gameObject);
+            }
+            boat.attached = false;
+            messageManager.ShowMessage("gameover");
+        }
     }
 
     // Update is called once per frame
+    private float healthDeductionTimeStamp;
     void Update()
     {
+        if(Time.timeSinceLevelLoad - healthDeductionTimeStamp > 1f)
+        {
+            healthDeductionTimeStamp = Time.timeSinceLevelLoad;
+            if (character != null && character.transform.position.y < -1.7f)
+            {
+                UpdateHealth(-10);
+            }
+            else {
+                UpdateHealth(-1);
+            }
+
+            health--;
+        }
+
         int offsetX = (int)(Camera.transform.position.x / tileSize);
         if (offsetX < curOffsetX) {
             Debug.Log("ox = " + offsetX );
@@ -198,13 +238,7 @@ public class WorldManager : MonoBehaviour
     private bool characterPlaced = false;
     public GameObject GetLandFeature()
     {
-        /*if (!characterPlaced)
-        {
-            characterPlaced = true;
-            Debug.Log("PLACED CHARACTER!");
-            return character.gameObject;
-        }*/
-        return landFeatures[Random.Range(0, landFeatures.Length)];
+        return landFeatures[Random.Range(0, landFeatures.Length)].gameObject;
     }
 
     private float switchTimestamp = 0f;
@@ -219,7 +253,7 @@ public class WorldManager : MonoBehaviour
     }
 
     public void SwitchToBoat()
-    {        
+    {
         if ((character.transform.position - boat.transform.position).magnitude < 10)
         {
             if (Time.timeSinceLevelLoad - switchTimestamp < 5) { return; }
@@ -228,5 +262,11 @@ public class WorldManager : MonoBehaviour
             boat.attached = true;
             switchTimestamp = Time.timeSinceLevelLoad;
         }
+    }
+
+    public void FindClue()
+    {
+        cluesFound++;
+        messageManager.ShowMessage("clue");
     }
 }

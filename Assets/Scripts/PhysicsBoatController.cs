@@ -102,9 +102,5 @@ public class PhysicsBoatController : MonoBehaviour
         Camera.transform.position = Vector3.Lerp(Camera.transform.position, new Vector3(cameraTarget.x, Camera.transform.position.y, cameraTarget.z), .1f);
         Camera.transform.LookAt(transform);
 
-
     }
-
-
-
 }
