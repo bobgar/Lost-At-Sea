@@ -15,7 +15,8 @@ public class WorldManager : MonoBehaviour
     public GameObject terrainContainer;
     private List<List<GameObject>> waterTiles = new List<List<GameObject>>();
     private List<List<TerrainGenerator>> terrainTiles = new List<List<TerrainGenerator>>();
-    public vThirdPersonInput character;
+    public vThirdPersonInput characterPrefab;
+    protected vThirdPersonInput character;
     public PhysicsBoatController boat;
 
     protected int curOffsetX = 0;
@@ -197,25 +198,23 @@ public class WorldManager : MonoBehaviour
     private bool characterPlaced = false;
     public GameObject GetLandFeature()
     {
-        if (!characterPlaced)
+        /*if (!characterPlaced)
         {
             characterPlaced = true;
             Debug.Log("PLACED CHARACTER!");
             return character.gameObject;
-        }
+        }*/
         return landFeatures[Random.Range(0, landFeatures.Length)];
     }
 
     private float switchTimestamp = 0f;
-
     public void SwitchToCharacter()
     {
         if (Time.timeSinceLevelLoad - switchTimestamp < 5) { return; }
         boat.attached = false;
-        character.gameObject.SetActive(true);
+        character = Instantiate(characterPrefab);
+        character.worldManager = this;
         character.transform.position = boat.transform.position + new Vector3(0,.5f,0) + boat.transform.right * 2;
-        character.PositionToSet = boat.transform.position + new Vector3(0, .5f, 0) + boat.transform.right * 2;
-        character.SetPosition = true;
         switchTimestamp = Time.timeSinceLevelLoad;
     }
 
@@ -224,7 +223,8 @@ public class WorldManager : MonoBehaviour
         if ((character.transform.position - boat.transform.position).magnitude < 10)
         {
             if (Time.timeSinceLevelLoad - switchTimestamp < 5) { return; }
-            character.gameObject.SetActive(false);
+            Destroy(character.gameObject);
+            character = null;
             boat.attached = true;
             switchTimestamp = Time.timeSinceLevelLoad;
         }

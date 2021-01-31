@@ -12,9 +12,7 @@ namespace Invector.vCharacterController
         public string verticallInput = "Vertical";
         public KeyCode jumpInput = KeyCode.Space;
         public KeyCode strafeInput = KeyCode.Tab;
-        public KeyCode sprintInput = KeyCode.LeftShift;
-        public bool SetPosition = true;
-        public Vector3 PositionToSet;
+        public KeyCode sprintInput = KeyCode.LeftShift;                
 
         [Header("Camera Input")]
         public string rotateCameraXInput = "Mouse X";
@@ -39,10 +37,6 @@ namespace Invector.vCharacterController
 
             Camera = Camera.main;
 
-            if (SetPosition)
-            {
-                transform.position = PositionToSet;
-            }
         }
 
         protected virtual void FixedUpdate()
@@ -68,11 +62,6 @@ namespace Invector.vCharacterController
             InputHandle();                  // update the input methods
             cc.UpdateAnimator();            // updates the Animator Parameters
 
-            if (SetPosition)
-            {
-                transform.position = PositionToSet;
-                SetPosition = false;
-            }
         }
 
         public virtual void OnAnimatorMove()
