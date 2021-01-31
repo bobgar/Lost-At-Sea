@@ -5287,6 +5287,9 @@ MonoBehaviour:
   terrainTile: {fileID: 354616017432645556, guid: 6afa08a164dea214ab7692c4139ba9e3,
     type: 3}
   terrainContainer: {fileID: 1601156990}
+  landFeatures:
+  - {fileID: 7879856551737253694, guid: ae5543b94e42f4445aff1aa2b9f53bd0, type: 3}
+  - {fileID: 3526710899235338313, guid: da8487dc5b3a52d4c824f9b6c5463594, type: 3}
 --- !u!4 &1274975898
 Transform:
   m_ObjectHideFlags: 0
@@ -5696,7 +5699,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 919132147627598193}
   m_LocalRotation: {x: 0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0.1, y: 0.993, z: 0}
+  m_LocalPosition: {x: -0.1, y: 0.5, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 261663933}
