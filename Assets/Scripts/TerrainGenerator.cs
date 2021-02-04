@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Invector.vCharacterController;
+using System;
 
 public class TerrainGenerator : MonoBehaviour
 {
@@ -15,6 +16,15 @@ public class TerrainGenerator : MonoBehaviour
     public Texture2D baseTexture;
     public Texture2D borderTexture;
     public Texture2D highTexture;
+
+    [Serializable]
+    public struct TexturePoints
+    {
+        public float point;
+        public int texture;
+    }
+
+    public TexturePoints[] TextureMix;
 
     public WorldManager worldManager;
     public Terrain terrain;
@@ -48,13 +58,13 @@ public class TerrainGenerator : MonoBehaviour
         TerrainLayer[] terrainLayers = new TerrainLayer[3];
         terrainLayers[0] = new TerrainLayer();
         terrainLayers[0].diffuseTexture = baseTexture;
-        terrainLayers[0].tileSize = new Vector2(10f, 10f);        
+        terrainLayers[0].tileSize = new Vector2(40f, 40f);        
         terrainLayers[1] = new TerrainLayer();
         terrainLayers[1].diffuseTexture = borderTexture;
-        terrainLayers[1].tileSize = new Vector2(10f, 10f);
+        terrainLayers[1].tileSize = new Vector2(40f, 40f);
         terrainLayers[2] = new TerrainLayer();
         terrainLayers[2].diffuseTexture = highTexture;
-        terrainLayers[2].tileSize = new Vector2(10f, 10f);
+        terrainLayers[2].tileSize = new Vector2(40f, 40f);
 
         terrainData.terrainLayers = terrainLayers;
 
@@ -68,7 +78,7 @@ public class TerrainGenerator : MonoBehaviour
         if (highestPoint.y > .63f)
         {
             //Debug.Log("name: " + name + "   Highest Point: " + highestPoint);
-            if (Random.Range(0, 15) < 1)
+            if (UnityEngine.Random.Range(0, 15) < 1)
             {
                 totalPlacedObjectCount++;
                 //Debug.Log("Placing Feature: " + totalPlacedObjectCount);
@@ -135,20 +145,50 @@ public class TerrainGenerator : MonoBehaviour
 
                 heights[z, x] = height;
 
-                float perturb = ((worldManager.Noise.GetSimplexFractal(20 + px * 40, -40 + pz * 40)) / (PERLIN_MIN * 2)) / 5.0f + height;
+                //float perturb = ((worldManager.Noise.GetSimplexFractal(20 + px * 40, -40 + pz * 40)) / (PERLIN_MIN * 2)) / 5.0f + height;
+                float perturb = ((worldManager.Noise.GetSimplexFractal(20 + px * 40, -40 + pz * 40)) / (PERLIN_MIN * 2)) / 20.0f + height;
 
-                if (perturb <= .63f)
+                alpha1[z, x, 0] = 0;
+                alpha1[z, x, 1] = 0;
+                alpha1[z, x, 2] = 0;
+
+                if (perturb <= TextureMix[0].point)
+                {
+                    alpha1[z, x, TextureMix[0].texture] = 1f;
+                } else {
+                    bool wroteit = false;
+                    for (int i =1; i < TextureMix.Length; i++)
+                    {
+                        if(perturb > TextureMix[i-1].point && perturb <= TextureMix[i].point)
+                        {
+                            float r = TextureMix[i - 1].point - TextureMix[i].point;
+                            float p = (perturb - TextureMix[i].point) / r;
+                            if (TextureMix[i - 1].texture == TextureMix[i].texture)
+                            {
+                                alpha1[z, x, TextureMix[i - 1].texture] = 1f;
+                            }
+                            else
+                            {
+                                alpha1[z, x, TextureMix[i - 1].texture] = p;
+                                alpha1[z, x, TextureMix[i].texture] = 1.0f - p;
+                            }
+                            break;
+                        }
+                    }
+                }
+
+                /*if (perturb <= .6f)
                 {
                     alpha1[z, x, 0] = 1f;
                     alpha1[z, x, 1] = 0f;
                     alpha1[z, x, 2] = 0f;
                 }
-                else if (perturb > .68f && height < .73f)
+                else if (perturb > .6f && height <= .63f)
                 {
                     alpha1[z, x, 0] = 0f;
                     alpha1[z, x, 1] = 1f;
                     alpha1[z, x, 2] = 0f;
-                } else if (perturb > .73f && height < .77f)
+                } else if (perturb > .63f && height < .7f)
                 {
                     alpha1[z, x, 0] = 1f;
                     alpha1[z, x, 1] = 0f;
@@ -159,7 +199,7 @@ public class TerrainGenerator : MonoBehaviour
                     alpha1[z, x, 0] = 0f;
                     alpha1[z, x, 1] = 0f;
                     alpha1[z, x, 2] = 1f;
-                }
+                }*/
             }
         }
         
