@@ -13,7 +13,7 @@ public class WorldManager : MonoBehaviour
     public int maxHealth = 200;
     public int health = 200;
     public GameObject healthBar;
-    const int tileSize = 40;
+    const int tileSize = 160;
     protected Camera Camera;
     public int viewDistance = 8;
     public GameObject waterTile;

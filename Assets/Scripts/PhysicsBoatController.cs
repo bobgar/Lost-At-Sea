@@ -5,7 +5,6 @@ using UnityEngine;
 public class PhysicsBoatController : MonoBehaviour
 {
     public WorldManager worldManager;
-    public ParticleSystem ps;
 
     protected Camera Camera;
 
@@ -47,8 +46,9 @@ public class PhysicsBoatController : MonoBehaviour
             {
                 if (g.transform.position.y < buoyancyLevel)
                 {
-                    float b = (float) Math.Pow((buoyancyLevel - transform.position.y), 2);
-                    rigidBody.AddForceAtPosition(new Vector3(0, 1, 0) * b * buoyancyForce, g.transform.position);
+                    float b = (float) Math.Pow((buoyancyLevel - transform.position.y), 2) * buoyancyForce;
+                    b = b < -Physics.gravity.y * 1.1f ? b : -Physics.gravity.y * 1.1f;
+                    rigidBody.AddForceAtPosition(new Vector3(0, 1, 0) * b , g.transform.position);
                     touchingWater = true;
                 }
             }
@@ -71,6 +71,18 @@ public class PhysicsBoatController : MonoBehaviour
             worldManager.SwitchToCharacter();
         }
 
+        if (!touchingWater)
+        {
+            rigidBody.drag = .05f;
+            rigidBody.angularDrag = .1f;
+        } 
+        else
+        {
+            rigidBody.drag = 1f;
+            rigidBody.angularDrag = 4f;
+        }
+        
+        
         if (touchingWater && !sinking)
         {
             //Left
@@ -98,21 +110,9 @@ public class PhysicsBoatController : MonoBehaviour
             }
         }
 
-        if (rigidBody.velocity.magnitude > 0.3f)
-        {
-            ParticleSystem.EmissionModule emission = ps.emission;
-            emission.rateOverTime = (rigidBody.velocity.magnitude - 1f);
-            emission.enabled = true;
-        }
-        else
-        {
-            ParticleSystem.EmissionModule emission = ps.emission;
-            emission.enabled = false;
-        }
-
         Vector3 cameraTarget = transform.position - transform.forward * 10f;
 
-        Camera.transform.position = Vector3.Lerp(Camera.transform.position, new Vector3(cameraTarget.x, Camera.transform.position.y, cameraTarget.z), .1f);
+        Camera.transform.position = Vector3.Lerp(Camera.transform.position, new Vector3(cameraTarget.x, cameraTarget.y + 5f, cameraTarget.z), .1f);
         Camera.transform.LookAt(transform);
     }
 }

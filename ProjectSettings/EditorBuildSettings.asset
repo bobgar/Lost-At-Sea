@@ -4,5 +4,8 @@
 EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
-  m_Scenes: []
+  m_Scenes:
+  - enabled: 1
+    path: Assets/GaiaTest.unity
+    guid: 740d3dc21319d544daf57d7b6cb1ccd2
   m_configObjects: {}

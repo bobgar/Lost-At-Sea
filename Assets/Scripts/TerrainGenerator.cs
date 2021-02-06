@@ -9,13 +9,15 @@ public class TerrainGenerator : MonoBehaviour
     // -SQRT(.5) , SQRT(.5) are the Perlin limits.  I use a precalculated const for this.
     const float PERLIN_MIN = 0.70710678118654752440084436210485f;
 
-    const int MAX_HEIGHT = 40;
-    const int TERRAIN_WIDTH = 40;
+    const int MAX_HEIGHT = 480;
+    const int TERRAIN_WIDTH = 160;
     const int RESOLUTION = 33;
 
     public Texture2D baseTexture;
     public Texture2D borderTexture;
     public Texture2D highTexture;
+
+    public Texture2D noiseTexture;
 
     [Serializable]
     public struct TexturePoints
@@ -48,14 +50,14 @@ public class TerrainGenerator : MonoBehaviour
 
     public void InitializeTerrain()
     {
-        transform.position += new Vector3(-TERRAIN_WIDTH / 2, -25, -TERRAIN_WIDTH / 2);
+        transform.position += new Vector3(-TERRAIN_WIDTH / 2, -300, -TERRAIN_WIDTH / 2);
         terrain = GetComponent<Terrain>();
         terrainData = new TerrainData();
         terrainData.size = new Vector3(TERRAIN_WIDTH, MAX_HEIGHT, TERRAIN_WIDTH);
         terrainData.heightmapResolution = RESOLUTION;
         terrainData.alphamapResolution = RESOLUTION;
 
-        TerrainLayer[] terrainLayers = new TerrainLayer[3];
+        TerrainLayer[] terrainLayers = new TerrainLayer[4];
         terrainLayers[0] = new TerrainLayer();
         terrainLayers[0].diffuseTexture = baseTexture;
         terrainLayers[0].tileSize = new Vector2(40f, 40f);        
@@ -65,6 +67,9 @@ public class TerrainGenerator : MonoBehaviour
         terrainLayers[2] = new TerrainLayer();
         terrainLayers[2].diffuseTexture = highTexture;
         terrainLayers[2].tileSize = new Vector2(40f, 40f);
+        /*terrainLayers[3] = new TerrainLayer();
+        terrainLayers[3].diffuseTexture = noiseTexture;
+        terrainLayers[3].tileSize = new Vector2(40f, 40f);*/
 
         terrainData.terrainLayers = terrainLayers;
 
@@ -124,7 +129,7 @@ public class TerrainGenerator : MonoBehaviour
         float px =0, pz = 0;
         string chunkString = "location x = "+ (transform.position.x / (float)TERRAIN_WIDTH) + "   z = "  + (transform.position.z / (float)TERRAIN_WIDTH);
 
-        float[,,] alpha1 = new float[terrainData.alphamapResolution, terrainData.alphamapResolution, 3];
+        float[,,] alpha1 = new float[terrainData.alphamapResolution, terrainData.alphamapResolution, terrainData.terrainLayers.Length];
         float curHighestPoint = 0;
         float vertexToWorld  = (float)TERRAIN_WIDTH / (float)vertices;
         for (int x = 0; x < vertices; x++)
@@ -148,10 +153,6 @@ public class TerrainGenerator : MonoBehaviour
                 //float perturb = ((worldManager.Noise.GetSimplexFractal(20 + px * 40, -40 + pz * 40)) / (PERLIN_MIN * 2)) / 5.0f + height;
                 float perturb = ((worldManager.Noise.GetSimplexFractal(20 + px * 40, -40 + pz * 40)) / (PERLIN_MIN * 2)) / 20.0f + height;
 
-                alpha1[z, x, 0] = 0;
-                alpha1[z, x, 1] = 0;
-                alpha1[z, x, 2] = 0;
-
                 if (perturb <= TextureMix[0].point)
                 {
                     alpha1[z, x, TextureMix[0].texture] = 1f;
@@ -163,6 +164,7 @@ public class TerrainGenerator : MonoBehaviour
                         {
                             float r = TextureMix[i - 1].point - TextureMix[i].point;
                             float p = (perturb - TextureMix[i].point) / r;
+
                             if (TextureMix[i - 1].texture == TextureMix[i].texture)
                             {
                                 alpha1[z, x, TextureMix[i - 1].texture] = 1f;
@@ -177,29 +179,7 @@ public class TerrainGenerator : MonoBehaviour
                     }
                 }
 
-                /*if (perturb <= .6f)
-                {
-                    alpha1[z, x, 0] = 1f;
-                    alpha1[z, x, 1] = 0f;
-                    alpha1[z, x, 2] = 0f;
-                }
-                else if (perturb > .6f && height <= .63f)
-                {
-                    alpha1[z, x, 0] = 0f;
-                    alpha1[z, x, 1] = 1f;
-                    alpha1[z, x, 2] = 0f;
-                } else if (perturb > .63f && height < .7f)
-                {
-                    alpha1[z, x, 0] = 1f;
-                    alpha1[z, x, 1] = 0f;
-                    alpha1[z, x, 2] = 0f;
-                }
-                else
-                {
-                    alpha1[z, x, 0] = 0f;
-                    alpha1[z, x, 1] = 0f;
-                    alpha1[z, x, 2] = 1f;
-                }*/
+                //alpha1[z,x,3] = (worldManager.Noise2.GetSimplexFractal(px , pz) + PERLIN_MIN) / (PERLIN_MIN * 2);
             }
         }
         
