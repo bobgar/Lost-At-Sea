@@ -9,15 +9,18 @@ public class TerrainGenerator : MonoBehaviour
     // -SQRT(.5) , SQRT(.5) are the Perlin limits.  I use a precalculated const for this.
     const float PERLIN_MIN = 0.70710678118654752440084436210485f;
 
+    const int MAX_TREES = 100;
     const int MAX_HEIGHT = 480;
     const int TERRAIN_WIDTH = 160;
     const int RESOLUTION = 33;
+
+    public GameObject[] trees;
 
     public Texture2D baseTexture;
     public Texture2D borderTexture;
     public Texture2D highTexture;
 
-    public Texture2D noiseTexture;
+    public Texture2D noiseTexture;    
 
     [Serializable]
     public struct TexturePoints
@@ -71,9 +74,25 @@ public class TerrainGenerator : MonoBehaviour
         terrainLayers[3].diffuseTexture = noiseTexture;
         terrainLayers[3].tileSize = new Vector2(40f, 40f);*/
 
+        TreePrototype[] treePrototypes = new TreePrototype[trees.Length];
+        for(int i = 0; i < treePrototypes.Length; i++)
+        {
+            treePrototypes[i] = new TreePrototype();
+            treePrototypes[i].prefab = trees[i];
+        }
+
+        terrainData.treePrototypes = treePrototypes;
+
         terrainData.terrainLayers = terrainLayers;
 
         terrain.terrainData = terrainData;
+
+
+        terrain.treeBillboardDistance = 2000;
+        terrain.treeMaximumFullLODCount = 100;
+        terrain.treeCrossFadeLength = 0;
+        terrain.treeDistance = 2000;
+
 
         UpdateTerrain();
 
@@ -132,6 +151,13 @@ public class TerrainGenerator : MonoBehaviour
         float[,,] alpha1 = new float[terrainData.alphamapResolution, terrainData.alphamapResolution, terrainData.terrainLayers.Length];
         float curHighestPoint = 0;
         float vertexToWorld  = (float)TERRAIN_WIDTH / (float)vertices;
+
+        int treeCount = 0;
+        TreeInstance[] treeInstances = new TreeInstance[MAX_TREES];
+
+        //TODO add instance???
+        //TreeInstance[] trees = new TreeInstance[];
+
         for (int x = 0; x < vertices; x++)
         {
             for(int z = 0; z < vertices; z++)
@@ -150,6 +176,17 @@ public class TerrainGenerator : MonoBehaviour
 
                 heights[z, x] = height;
 
+                if (height > 0.625f && height < 0.725f && treeCount < treeInstances.Length && UnityEngine.Random.Range(0, 50) < 1)
+                {
+                    treeInstances[treeCount] = new TreeInstance();
+                    treeInstances[treeCount].prototypeIndex = UnityEngine.Random.Range(0, terrainData.treePrototypes.Length);                    
+                    treeInstances[treeCount].position = new Vector3((float)(x) / (float)(vertices - 1), 0, (float)(z) / (float)(vertices - 1));
+                    treeInstances[treeCount].heightScale = 1;
+                    treeInstances[treeCount].widthScale = 1;
+                    treeInstances[treeCount].rotation = UnityEngine.Random.Range(0, 360);
+                    treeCount++;
+                }
+
                 //float perturb = ((worldManager.Noise.GetSimplexFractal(20 + px * 40, -40 + pz * 40)) / (PERLIN_MIN * 2)) / 5.0f + height;
                 float perturb = ((worldManager.Noise.GetSimplexFractal(20 + px * 40, -40 + pz * 40)) / (PERLIN_MIN * 2)) / 20.0f + height;
 
@@ -157,7 +194,6 @@ public class TerrainGenerator : MonoBehaviour
                 {
                     alpha1[z, x, TextureMix[0].texture] = 1f;
                 } else {
-                    bool wroteit = false;
                     for (int i =1; i < TextureMix.Length; i++)
                     {
                         if(perturb > TextureMix[i-1].point && perturb <= TextureMix[i].point)
@@ -182,7 +218,9 @@ public class TerrainGenerator : MonoBehaviour
                 //alpha1[z,x,3] = (worldManager.Noise2.GetSimplexFractal(px , pz) + PERLIN_MIN) / (PERLIN_MIN * 2);
             }
         }
-        
+
+        terrain.terrainData.SetTreeInstances(treeInstances , true);
+
         terrain.terrainData.SetHeights(0, 0, heights);
 
         terrain.terrainData.SetAlphamaps(0, 0, alpha1);

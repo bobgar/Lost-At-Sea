@@ -89,6 +89,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 174613ae01ff5584f9b8570c5d0d2ce0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  trees:
+  - {fileID: 3733773962993530657, guid: 0bcd9e7550ff684468350835ef0b646b, type: 3}
   baseTexture: {fileID: 2800000, guid: cf19772c28e67f34488043eb2498add8, type: 3}
   borderTexture: {fileID: 2800000, guid: 1c769a7214cab7f4fa8f0141e69e2820, type: 3}
   highTexture: {fileID: 2800000, guid: ceaea991022719f4bbd05daa986a9b64, type: 3}
