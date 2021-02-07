@@ -94,7 +94,7 @@ MonoBehaviour:
   baseTexture: {fileID: 2800000, guid: cf19772c28e67f34488043eb2498add8, type: 3}
   borderTexture: {fileID: 2800000, guid: 1c769a7214cab7f4fa8f0141e69e2820, type: 3}
   highTexture: {fileID: 2800000, guid: ceaea991022719f4bbd05daa986a9b64, type: 3}
-  noiseTexture: {fileID: 2800000, guid: 7ef1a8798f9d51948a22b15079683baf, type: 3}
+  mountainTexture: {fileID: 2800000, guid: ae0e493fe6b6c3e4d9c26cf170b7fa4a, type: 3}
   TextureMix:
   - point: 0.6
     texture: 0
@@ -102,10 +102,12 @@ MonoBehaviour:
     texture: 1
   - point: 0.64
     texture: 0
-  - point: 0.75
+  - point: 0.7
+    texture: 2
+  - point: 0.8
     texture: 2
   - point: 1
-    texture: 2
+    texture: 3
   worldManager: {fileID: 0}
   terrain: {fileID: 0}
   highestPoint: {x: 0, y: 0, z: 0}

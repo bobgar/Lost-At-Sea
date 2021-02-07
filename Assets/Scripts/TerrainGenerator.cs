@@ -20,7 +20,7 @@ public class TerrainGenerator : MonoBehaviour
     public Texture2D borderTexture;
     public Texture2D highTexture;
 
-    public Texture2D noiseTexture;    
+    public Texture2D mountainTexture;    
 
     [Serializable]
     public struct TexturePoints
@@ -70,9 +70,9 @@ public class TerrainGenerator : MonoBehaviour
         terrainLayers[2] = new TerrainLayer();
         terrainLayers[2].diffuseTexture = highTexture;
         terrainLayers[2].tileSize = new Vector2(40f, 40f);
-        /*terrainLayers[3] = new TerrainLayer();
-        terrainLayers[3].diffuseTexture = noiseTexture;
-        terrainLayers[3].tileSize = new Vector2(40f, 40f);*/
+        terrainLayers[3] = new TerrainLayer();
+        terrainLayers[3].diffuseTexture = mountainTexture;
+        terrainLayers[3].tileSize = new Vector2(40f, 40f);
 
         TreePrototype[] treePrototypes = new TreePrototype[trees.Length];
         for(int i = 0; i < treePrototypes.Length; i++)
@@ -176,7 +176,7 @@ public class TerrainGenerator : MonoBehaviour
 
                 heights[z, x] = height;
 
-                if (height > 0.625f && height < 0.725f && treeCount < treeInstances.Length && UnityEngine.Random.Range(0, 50) < 1)
+                if (height > 0.625f && height < 0.675f && treeCount < treeInstances.Length && UnityEngine.Random.Range(0, 50) < 1)
                 {
                     treeInstances[treeCount] = new TreeInstance();
                     treeInstances[treeCount].prototypeIndex = UnityEngine.Random.Range(0, terrainData.treePrototypes.Length);                    
